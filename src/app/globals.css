@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   TOKENS — "Warm Grade" system.
+   Inspired by film color grading: warm highlights (amber),
+   cool shadows (deep teal), on a soft linen paper ground.
+   No pure black, no pure white, nothing fully saturated.
+   ============================================================ */
+:root {
+  --paper: #faf6ef;
+  --paper-deep: #f1e9db;
+  --card: #fffdf9;
+  --ink: #2b2620;
+  --ink-soft: #6e6459;
+  --ink-faint: #a89e8f;
+  --line: rgba(43, 38, 32, 0.09);
+
+  --teal: #3e5c58;
+  --teal-soft: #6c8985;
+  --amber: #d99a51;
+  --amber-soft: #eec48a;
+  --rose: #c97b6b;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--paper);
+  position: relative;
+}
+
+.font-display {
+  font-family: 'Fraunces', serif;
+}
+
+::selection {
+  background: var(--amber-soft);
+  color: var(--ink);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink-faint);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-soft);
+}
+
+/* ============================================================
+   FILM GRAIN — a fixed, near-invisible noise layer so large
+   flat color areas feel like graded film stock, not a UI fill.
+   ============================================================ */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   SIGNATURE — soft duotone "grade wash": a large, gently
+   blurred gradient blending teal shadow into amber highlight,
+   the way a colorist would paint a gradient map onto a shot.
+   ============================================================ */
+.grade-wash {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.55;
+  background: radial-gradient(circle at 30% 30%, var(--amber-soft), transparent 60%),
+              radial-gradient(circle at 70% 70%, var(--teal-soft), transparent 60%);
+  pointer-events: none;
+}
+
+.card-wash {
+  background: linear-gradient(155deg, var(--card) 0%, var(--card) 55%, var(--paper-deep) 100%);
+}
+
+/* Gentle entrance — a soft rise, no snap */
+@keyframes soft-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.soft-rise {
+  animation: soft-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soft-rise { animation: none; }
+}
