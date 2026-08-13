@@ -34,7 +34,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="bg-background text-foreground antialiased">
+      <body className="bg-[var(--paper)] text-[var(--ink)] antialiased">
         <div className="grain" />
         {children}
       </body>

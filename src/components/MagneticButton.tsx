@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
-interface MagneticButtonProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+interface MagneticButtonProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'onDrag' | 'onDragStart' | 'onDragEnd'> {
   children: React.ReactNode;
 }
 

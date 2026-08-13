@@ -9,22 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bg: 'var(--bg)',
-        surface: 'var(--surface)',
+        paper: 'var(--paper)',
+        card: 'var(--card)',
         ink: {
           DEFAULT: 'var(--ink)',
-          soft: 'var(--ink-soft)'
+          soft: 'var(--ink-soft)',
+          faint: 'var(--ink-faint)',
         },
-        accent: {
-          DEFAULT: 'var(--accent)',
-          soft: 'var(--accent-soft)'
-        },
-        line: 'var(--line)'
+        teal: 'var(--teal)',
+        amber: 'var(--amber)',
+        rose: 'var(--rose)',
+        line: 'var(--line)',
       },
       fontFamily: {
         serif: ['Fraunces', 'serif'],
         sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
         'soft': '0 2px 12px rgba(43,42,38,0.06)',

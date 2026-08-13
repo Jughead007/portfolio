@@ -4,7 +4,6 @@ export const siteConfig = {
   email: "hrishimankar70@gmail.com",
   linkedin: "https://linkedin.com/in/rishikesh-mankar",
   github: "https://github.com/jughead007",
-  resumeUrl: "#", // TODO: Add Google Drive/Dropbox PDF link here
   location: "Pune, MH",
   education: "M.Sc. Data Science, Fergusson College, Pune (2025)",
   currentRole: "Jr. Data Scientist at Rotten Grape Pvt Ltd.",
@@ -24,48 +23,36 @@ export const projects = [
     description: "I wanted to learn object detection by doing, so I trained a YOLO model to find cats. The dataset is small and scrappy, but the whole pipeline — data prep, training, evaluation — is real, and it taught me more than any tutorial.",
     chips: ["YOLO", "OpenCV", "Python"],
     repoUrl: "https://github.com/Jughead007/cat_detection_model",
-    demoUrl: "", // TODO: Add demo URL when deployed
-    featured: true,
   },
   {
     title: "RAG System — AI Intern Task",
     description: "A take-home task turned into a proper project: a small RAG pipeline that retrieves relevant chunks and answers questions with sources. It's the project that got me hooked on LLM engineering.",
     chips: ["RAG", "LLM", "Embeddings", "Python"],
     repoUrl: "https://github.com/Jughead007/AI_Intern-Task",
-    demoUrl: "",
-    featured: true,
   },
   {
     title: "Fynd AI Feedback Dashboard",
     description: "A feedback system built for an internship assignment: FastAPI on the backend, Jinja2 templates, and Google Gemini doing the analysis. Two dashboards — one for users, one for admins — sharing one persistent data source. This is a full-stack AI product, not just a notebook.",
     chips: ["FastAPI", "Gemini API", "Jinja2", "HTML"],
     repoUrl: "https://github.com/Jughead007/Fynd_Dashboard",
-    demoUrl: "",
-    featured: true,
   },
   {
     title: "Hand Gesture Recognition",
     description: "Real-time gesture recognition from a webcam feed. The fun part was making it feel instant — detecting and classifying gestures with barely any latency.",
     chips: ["OpenCV", "MediaPipe", "Python"],
     repoUrl: "https://github.com/Jughead007/Hand-Gesture-Recognition",
-    demoUrl: "",
-    featured: true,
   },
   {
     title: "People Counter (CV)",
     description: "A people tracker that counts individuals moving through a scene. Object detection plus tracking, tuned for real video — the kind of system you could point at a store entrance and actually use.",
     chips: ["OpenCV", "Tracking", "Python"],
     repoUrl: "https://github.com/Jughead007/People_Counter-using-CV",
-    demoUrl: "",
-    featured: true,
   },
   {
     title: "Sentiment Analysis — Deployed",
     description: "Sentiment analysis isn't impressive until it runs somewhere someone can click. This one is packaged in Streamlit and deployed — the whole train-to-production loop in one repo.",
     chips: ["NLP", "Streamlit", "Python"],
     repoUrl: "https://github.com/Jughead007/Deploy",
-    demoUrl: "",
-    featured: true,
   }
 ];
 
