@@ -4,9 +4,9 @@
 
 /* ============================================================
    TOKENS — "Warm Grade" system.
-   Inspired by film color grading: warm highlights (amber),
-   cool shadows (deep teal), on a soft linen paper ground.
-   No pure black, no pure white, nothing fully saturated.
+   Film-inspired grade: warm highlights (amber), cool shadows
+   (deep teal), on a soft linen paper ground. No pure black,
+   no pure white, nothing fully saturated.
    ============================================================ */
 :root {
   --paper: #faf6ef;
@@ -16,12 +16,17 @@
   --ink-soft: #6e6459;
   --ink-faint: #a89e8f;
   --line: rgba(43, 38, 32, 0.09);
+  --line-strong: rgba(43, 38, 32, 0.16);
 
   --teal: #3e5c58;
   --teal-soft: #6c8985;
   --amber: #d99a51;
   --amber-soft: #eec48a;
   --rose: #c97b6b;
+
+  --shadow-sm: 0 8px 20px -14px rgba(43, 38, 32, 0.35);
+  --shadow-md: 0 24px 48px -24px rgba(43, 38, 32, 0.28);
+  --shadow-lg: 0 40px 80px -32px rgba(43, 38, 32, 0.32);
 }
 
 html {
@@ -47,6 +52,15 @@ body {
   color: var(--ink);
 }
 
+/* Visible, deliberate focus states — a small but real accessibility
+   and craft signal that generic templates usually skip. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -70,7 +84,7 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.05;
+  opacity: 0.045;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -84,7 +98,7 @@ body {
   position: absolute;
   border-radius: 999px;
   filter: blur(90px);
-  opacity: 0.55;
+  opacity: 0.5;
   background: radial-gradient(circle at 30% 30%, var(--amber-soft), transparent 60%),
               radial-gradient(circle at 70% 70%, var(--teal-soft), transparent 60%);
   pointer-events: none;
@@ -92,6 +106,20 @@ body {
 
 .card-wash {
   background: linear-gradient(155deg, var(--card) 0%, var(--card) 55%, var(--paper-deep) 100%);
+}
+
+/* Reusable chip component — consistent everywhere a tag/pill appears */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  background: var(--card);
 }
 
 /* Gentle entrance — a soft rise, no snap */
@@ -105,4 +133,5 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .soft-rise { animation: none; }
+  html { scroll-behavior: auto; }
 }
