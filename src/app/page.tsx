@@ -373,7 +373,7 @@ export default function Home() {
           <div className="relative">
             <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-4 uppercase">Get in touch</p>
             <h2 className="font-display text-3xl md:text-[2.6rem] leading-[1.15] text-[var(--ink)] mb-8 max-w-2xl mx-auto text-balance">
-              Have something worth <span className="italic text-[var(--teal)]">building</span>? I'd like to hear about it.
+              Have something worth <span className="italic text-[var(--teal)]">building</span>? I&apos;d like to hear about it.
             </h2>
             <MagneticButton
               href={`mailto:${siteConfig.email}`}

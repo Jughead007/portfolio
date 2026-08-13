@@ -36,7 +36,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--paper);
@@ -44,7 +44,7 @@ body {
 }
 
 .font-display {
-  font-family: 'Fraunces', serif;
+  font-family: var(--font-fraunces), 'Fraunces', serif;
 }
 
 ::selection {
