@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter, JetBrains_Mono, Caveat } from 'next/font/google';
+import { Fraunces, JetBrains_Mono, Caveat } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '../data/portfolio';
 
@@ -11,17 +11,10 @@ const fraunces = Fraunces({
   display: 'swap',
 });
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
 const mono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-mono',
+  weight: ['400', '500', '700'],
+  variable: '--font-jetbrains',
   display: 'swap',
 });
 
@@ -33,8 +26,8 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} — Technical Monograph & Research Journal`,
-  description: `${siteConfig.role} based in ${siteConfig.location}. A monograph documenting models, systems, and production AI engineering.`,
+  title: `${siteConfig.name} — Data Scientist & AI Engineer`,
+  description: `A café-style menu of models, systems and production AI engineering, served fresh by ${siteConfig.name}, ${siteConfig.role} based in ${siteConfig.location}.`,
 };
 
 export default function RootLayout({
@@ -45,10 +38,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${mono.variable} ${caveat.variable}`}
+      className={`${fraunces.variable} ${mono.variable} ${caveat.variable}`}
     >
-      <body className="bg-[var(--paper)] text-[var(--ink)] antialiased relative">
-        <div className="grain" />
+      <body className="bg-cream text-espresso antialiased">
+        <div className="menu-frame" aria-hidden />
+        <div className="grain" aria-hidden />
         {children}
       </body>
     </html>
