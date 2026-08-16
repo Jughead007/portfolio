@@ -3,24 +3,9 @@
 @tailwind utilities;
 
 :root {
-  /* warm espresso palette */
-  --espresso: #2e2118;
-  --cocoa: #5a463a;
-  --faded: #97836f;
-  --cream: #f6efe1;
-  --cream-card: #fdfaf1;
-  --cream-deep: #ede3ce;
-  --line: #d8c8a8;
-  --caramel: #a96a38;
-  --caramel-deep: #875026;
-  --terracotta: #b0512b;
-  --sage: #7d8b6c;
-
-  /* chalkboard */
-  --chalk: #f3ead6;
-  --chalk-soft: rgba(243, 234, 214, 0.78);
-  --chalk-line: rgba(243, 234, 214, 0.28);
-  --chalk-board: #303a2c;
+  --accent: #2563eb;
+  --accent-deep: #1d4ed8;
+  --paper: #fafaf9;
 }
 
 html {
@@ -30,136 +15,32 @@ html {
 body {
   margin: 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(1100px 520px at 50% -8%, rgba(255, 252, 240, 0.9), transparent 62%),
-    var(--cream);
-  color: var(--espresso);
-  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  background: var(--paper);
+  color: #171717;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--caramel);
-  color: var(--cream-card);
+  background: #dbeafe;
+  color: #1e3a8a;
 }
 
 :focus-visible {
-  outline: 2px solid var(--caramel);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
-/* film grain over everything, like an old menu card */
-.grain {
-  position: fixed;
-  inset: -50%;
-  z-index: 70;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* the printed double-rule frame around the viewport */
-.menu-frame {
-  position: fixed;
-  inset: 12px;
-  z-index: 60;
-  pointer-events: none;
-  border: 1px solid var(--line);
-  outline: 1px solid var(--line);
-  outline-offset: 4px;
-}
-
-@media (max-width: 640px) {
-  .menu-frame {
-    inset: 8px;
-    outline-offset: 3px;
-  }
-}
-
-/* rising steam off the cup */
-.steam {
-  animation: steam 3.4s ease-in-out infinite;
-}
-.steam-2 {
-  animation-delay: 1.1s;
-}
-.steam-3 {
-  animation-delay: 2.1s;
-}
-@keyframes steam {
-  0% {
-    transform: translateY(6px);
-    opacity: 0;
-  }
-  35% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-}
-
-/* slowly rotating stamp */
-.stamp-rotate {
-  animation: rotate 22s linear infinite;
-}
-@keyframes rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* specials marquee */
-.marquee {
-  overflow: hidden;
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 30s linear infinite;
-}
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* gentle float for decorations */
-.drift {
-  animation: drift 9s ease-in-out infinite alternate;
-}
-@keyframes drift {
-  from {
-    transform: translateY(-6px) rotate(-2deg);
-  }
-  to {
-    transform: translateY(8px) rotate(2deg);
-  }
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--cream);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--caramel);
-  border-radius: 8px;
-  border: 2px solid var(--cream);
+/* faint engineering grid for the hero */
+.bg-grid {
+  background-image: linear-gradient(to right, rgba(23, 23, 23, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 23, 23, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .steam,
-  .stamp-rotate,
-  .marquee-track,
-  .drift {
-    animation: none !important;
   }
 }

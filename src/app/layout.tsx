@@ -1,33 +1,24 @@
 import type { Metadata } from 'next';
-import { Fraunces, JetBrains_Mono, Caveat } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '../data/portfolio';
 
-const fraunces = Fraunces({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-fraunces',
+  variable: '--font-inter',
   display: 'swap',
 });
 
 const mono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500', '700'],
+  weight: ['400', '500'],
   variable: '--font-jetbrains',
-  display: 'swap',
-});
-
-const caveat = Caveat({
-  subsets: ['latin'],
-  weight: ['400', '600'],
-  variable: '--font-caveat',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} — Data Scientist & AI Engineer`,
-  description: `A café-style menu of models, systems and production AI engineering, served fresh by ${siteConfig.name}, ${siteConfig.role} based in ${siteConfig.location}.`,
+  description: `${siteConfig.role} based in ${siteConfig.location}. Machine learning systems, computer vision pipelines, and LLM applications built to work in production.`,
 };
 
 export default function RootLayout({
@@ -36,13 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={`${fraunces.variable} ${mono.variable} ${caveat.variable}`}
-    >
-      <body className="bg-cream text-espresso antialiased">
-        <div className="menu-frame" aria-hidden />
-        <div className="grain" aria-hidden />
+    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+      <body className="bg-[#FAFAF9] text-neutral-900 antialiased">
         {children}
       </body>
     </html>

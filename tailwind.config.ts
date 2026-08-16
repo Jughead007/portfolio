@@ -9,35 +9,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        espresso: 'var(--espresso)',
-        cocoa: 'var(--cocoa)',
-        faded: 'var(--faded)',
-        cream: {
-          DEFAULT: 'var(--cream)',
-          card: 'var(--cream-card)',
-          deep: 'var(--cream-deep)',
-        },
-        line: 'var(--line)',
-        caramel: {
-          DEFAULT: 'var(--caramel)',
-          deep: 'var(--caramel-deep)',
-        },
-        terracotta: 'var(--terracotta)',
-        sage: 'var(--sage)',
-        chalk: {
-          DEFAULT: 'var(--chalk)',
-          soft: 'var(--chalk-soft)',
-          line: 'var(--chalk-line)',
-          board: 'var(--chalk-board)',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          deep: 'var(--accent-deep)',
+          wash: '#eff6ff',
         },
       },
       fontFamily: {
-        serif: ['var(--font-fraunces)', 'Georgia', 'serif'],
-        hand: ['var(--font-caveat)', 'cursive'],
+        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-jetbrains)', 'ui-monospace', 'monospace'],
       },
       boxShadow: {
-        menu: '0 1px 2px rgba(64,45,26,0.05), 0 18px 40px -18px rgba(64,45,26,0.28)',
+        card: '0 1px 2px rgba(0,0,0,0.03), 0 8px 30px rgba(0,0,0,0.06)',
       },
     },
   },
