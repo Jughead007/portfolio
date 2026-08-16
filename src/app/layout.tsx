@@ -1,51 +1,56 @@
-import type { Metadata } from 'next'
-import { Fraunces, Inter } from 'next/font/google'
-import './globals.css'
-import { siteConfig } from '../data/portfolio'
+import type { Metadata } from 'next';
+import { Fraunces, Inter, JetBrains_Mono, Caveat } from 'next/font/google';
+import './globals.css';
+import { siteConfig } from '../data/portfolio';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['300', '400', '500', '600', '700'],
   style: ['normal', 'italic'],
-  display: 'swap',
   variable: '--font-fraunces',
-})
+  display: 'swap',
+});
 
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
-  display: 'swap',
   variable: '--font-inter',
-})
+  display: 'swap',
+});
 
-const description = `${siteConfig.role} based in ${siteConfig.location}. I build machine learning systems that ship — computer vision pipelines, RAG apps, and the backend work that makes them reliable.`
+const mono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  weight: ['400', '600'],
+  variable: '--font-caveat',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} — ${siteConfig.role}`,
-  description,
-  openGraph: {
-    title: `${siteConfig.name} — ${siteConfig.role}`,
-    description,
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: `${siteConfig.name} — ${siteConfig.role}`,
-    description,
-  },
-}
+  title: `${siteConfig.name} — Technical Monograph & Research Journal`,
+  description: `${siteConfig.role} based in ${siteConfig.location}. A monograph documenting models, systems, and production AI engineering.`,
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="bg-[var(--paper)] text-[var(--ink)] antialiased">
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${inter.variable} ${mono.variable} ${caveat.variable}`}
+    >
+      <body className="bg-[var(--paper)] text-[var(--ink)] antialiased relative">
         <div className="grain" />
         {children}
       </body>
     </html>
-  )
+  );
 }

@@ -1,411 +1,269 @@
-"use client"
-import { Github, Linkedin, ArrowUpRight, Mail, ArrowDown } from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { siteConfig, skills, projects, moreExperiments, experience } from '@/data/portfolio';
+"use client";
 
-// Import your new components
-import MagneticButton from '@/components/MagneticButton';
-import SpotlightCard from '@/components/SpotlightCard';
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, MotionValue } from "framer-motion";
+import { siteConfig, skills, projects, experience } from "@/data/portfolio";
+import { Volume2, VolumeX, ArrowUpRight, Github, ExternalLink } from "lucide-react";
+import Image from "next/image";
 
-const categoryAccent: Record<string, { dot: string; text: string }> = {
-  'Machine Learning': { dot: 'bg-[var(--teal)]', text: 'text-[var(--teal)]' },
-  'Computer Vision': { dot: 'bg-[var(--amber)]', text: 'text-[#9c6a26]' },
-  'LLMs & GenAI': { dot: 'bg-[var(--rose)]', text: 'text-[#a1503f]' },
-  'NLP': { dot: 'bg-[var(--teal-soft)]', text: 'text-[var(--teal)]' },
-  'Engineering & Deployment': { dot: 'bg-[var(--ink-faint)]', text: 'text-[var(--ink-soft)]' },
-};
+// ==========================================
+// 3D PAGE COMPONENT
+// ==========================================
+interface PageProps {
+  index: number;
+  total: number;
+  progress: MotionValue<number>;
+  front: React.ReactNode;
+  back: React.ReactNode;
+  zIndex: number;
+  playThwip: () => void;
+}
 
-const focusAreas = [
-  {
-    label: 'Computer Vision',
-    copy: 'Detection, tracking, and gesture recognition — models that have to work on real, messy video, not a clean benchmark set.',
-  },
-  {
-    label: 'LLM & RAG Systems',
-    copy: 'Retrieval pipelines and prompt-engineered apps that answer with sources, not just fluent guesses.',
-  },
-  {
-    label: 'Backend & Deployment',
-    copy: 'FastAPI services, Docker, and the unglamorous plumbing that turns a notebook result into something a user can actually hit.',
-  },
-];
+const Page = ({ index, total, progress, front, back, zIndex, playThwip }: PageProps) => {
+  const step = 1 / total;
+  const start = index * step;
+  const end = start + step;
 
-// Reusable scroll animation settings for sections
-const sectionReveal = {
-  initial: { opacity: 0, y: 40 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-100px" },
-  transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }
-};
+  // Track when a page crosses the halfway point to trigger the sound
+  const [hasFlipped, setHasFlipped] = useState(false);
 
-export default function Home() {
-  const internshipCount = experience.filter((e) =>
-    e.role.toLowerCase().includes('intern')
-  ).length;
-  const [featured, ...restProjects] = projects;
+  useEffect(() => {
+    return progress.onChange((latest) => {
+      const midpoint = start + (step / 2);
+      if (latest > midpoint && !hasFlipped) {
+        setHasFlipped(true);
+        playThwip();
+      } else if (latest < midpoint && hasFlipped) {
+        setHasFlipped(false);
+        playThwip();
+      }
+    });
+  }, [progress, start, step, hasFlipped, playThwip]);
+
+  const rotateY = useTransform(progress, [start, end], [0, -180]);
+
+  // Dynamic shadows based on rotation
+  const shadowOpacity = useTransform(progress, [start, end], [0.3, 0]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* ============ NAV ============ */}
-      <nav className="fixed top-0 w-full z-50 bg-[var(--paper)]/85 backdrop-blur-md border-b border-transparent">
-        <div className="max-w-5xl mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
-          <Link href="#top" className="font-display italic text-lg text-[var(--ink)]">
-            {siteConfig.name.split(' ')[0]}
-          </Link>
-          <div className="flex items-center gap-8 text-[13px] text-[var(--ink-soft)]">
-            <Link href="#about" className="hidden sm:inline hover:text-[var(--ink)] transition-colors">About</Link>
-            <Link href="#work" className="hidden sm:inline hover:text-[var(--ink)] transition-colors">Work</Link>
-            <Link href="#experience" className="hidden sm:inline hover:text-[var(--ink)] transition-colors">Experience</Link>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="px-4 py-2 rounded-full bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--teal)] transition-colors"
-            >
-              Say hello
-            </a>
-          </div>
-        </div>
-      </nav>
+    <motion.div
+      className="absolute top-0 right-0 w-1/2 h-full origin-left preserve-3d"
+      style={{ rotateY, zIndex }}
+    >
+      {/* FRONT */}
+      <div className="absolute inset-0 backface-hidden bg-[var(--paper-front)] page-shadow overflow-hidden text-[var(--ink)]">
+        {front}
+        <motion.div className="absolute inset-0 bg-black pointer-events-none" style={{ opacity: shadowOpacity }} />
+        <div className="absolute top-0 bottom-0 left-0 w-10 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+      </div>
 
-      <main id="top" className="px-6 md:px-8 max-w-5xl mx-auto">
+      {/* BACK */}
+      <div className="absolute inset-0 backface-hidden bg-[var(--paper-back)] page-shadow overflow-hidden text-[var(--ink)]" style={{ transform: "rotateY(180deg)" }}>
+        {back}
+        <div className="absolute top-0 bottom-0 right-0 w-10 bg-gradient-to-l from-black/10 to-transparent pointer-events-none" />
+      </div>
+    </motion.div>
+  );
+};
 
-        {/* ============ HERO ============ */}
-        <section className="relative pt-36 md:pt-40 pb-24 grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
-          <div className="grade-wash w-[420px] h-[420px] -top-20 -right-24 md:right-0" />
+// ==========================================
+// MAIN ENVIRONMENT COMPONENT
+// ==========================================
+export default function RiversideCafeEnvironment() {
+  const containerRef = useRef<HTMLDivElement>(null);
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="relative"
-          >
-            <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-6 uppercase">
-              {siteConfig.location} · {siteConfig.currentRole}
-            </p>
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-              className="font-display text-[clamp(2.4rem,5.5vw,3.8rem)] leading-[1.06] text-[var(--ink)] mb-8 text-balance"
-            >
-              I turn <span className="italic text-[var(--teal)]">messy data</span> into
-              systems people can actually use.
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-              className="text-[17px] text-[var(--ink-soft)] leading-relaxed max-w-md mb-8"
-            >
-              {siteConfig.name} — {siteConfig.role.toLowerCase()}. Comfortable
-              anywhere between a training loop and a production API, with a soft
-              spot for computer vision and retrieval-augmented LLM apps.
-            </motion.p>
+  // Audio State
+  const [isAudioMuted, setIsAudioMuted] = useState(true);
+  const ambientAudioRef = useRef<HTMLAudioElement>(null);
+  const pageTurnAudioRef = useRef<HTMLAudioElement>(null);
 
+  const toggleAudio = () => {
+    setIsAudioMuted(!isAudioMuted);
+    if (isAudioMuted && ambientAudioRef.current) {
+      ambientAudioRef.current.play();
+    } else if (ambientAudioRef.current) {
+      ambientAudioRef.current.pause();
+    }
+  };
+
+  const playThwip = () => {
+    if (!isAudioMuted && pageTurnAudioRef.current) {
+      pageTurnAudioRef.current.currentTime = 0;
+      pageTurnAudioRef.current.play();
+    }
+  };
+
+  // Parallax Mouse Tracking
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    mouseX.set((clientX / innerWidth) * 2 - 1);
+    mouseY.set((clientY / innerHeight) * 2 - 1);
+  };
+
+  // Smooth springs for parallax layers
+  const springConfig = { damping: 25, stiffness: 100 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  const bgX = useTransform(smoothX, [-1, 1], ["-2%", "2%"]);
+  const bgY = useTransform(smoothY, [-1, 1], ["-2%", "2%"]);
+  const deskX = useTransform(smoothX, [-1, 1], ["-1%", "1%"]);
+  const deskY = useTransform(smoothY, [-1, 1], ["-1%", "1%"]);
+  const itemsX = useTransform(smoothX, [-1, 1], ["-3%", "3%"]);
+  const itemsY = useTransform(smoothY, [-1, 1], ["-3%", "3%"]);
+
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
+
+  return (
+    <div ref={containerRef} onMouseMove={handleMouseMove} className="relative h-[500vh] bg-black">
+
+      {/* Audio Elements (Add real files to your /public folder) */}
+      <audio ref={ambientAudioRef} loop src="/ambient-river-cafe.mp3" />
+      <audio ref={pageTurnAudioRef} src="/paper-flip.mp3" />
+
+      {/* Audio Toggle UI */}
+      <button
+        onClick={toggleAudio}
+        className="fixed top-8 right-8 z-50 p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all"
+      >
+        {isAudioMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+      </button>
+
+      {/* ================= ENVIRONMENT LAYERS ================= */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden perspective-container flex items-center justify-center">
+
+        {/* Layer 1: Blurred River Background */}
+        <motion.div
+          className="absolute inset-[-5%] -z-20 bg-cover bg-center bg-no-repeat opacity-80"
+          style={{ x: bgX, y: bgY, backgroundImage: 'url("https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2500&auto=format&fit=crop")', filter: 'blur(12px)' }}
+        />
+
+        {/* Layer 2: The Wood/Marble Desk */}
+        <motion.div
+          className="absolute inset-[-5%] top-[20%] -z-10 bg-cover bg-top shadow-[0_-50px_100px_rgba(0,0,0,0.8)]"
+          style={{ x: deskX, y: deskY, backgroundImage: 'url("https://www.transparenttextures.com/patterns/wood-pattern.png")', backgroundColor: '#4a3b2c' }}
+        />
+
+        {/* Layer 3: Peripheral Desk Items (Interactive Polaroid) */}
+        <motion.div className="absolute inset-0 z-20 pointer-events-none" style={{ x: itemsX, y: itemsY }}>
+          {/* Coffee Cup Placeholder */}
+          <div className="absolute top-1/4 left-[10%] w-32 h-32 bg-black/40 rounded-full blur-md shadow-2xl" />
+
+          {/* Interactive Polaroid sitting on the desk */}
+          <div className="absolute bottom-[15%] left-[5%] pointer-events-auto group">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-              className="flex items-center gap-6 mb-10 text-[13px] text-[var(--ink-faint)]"
+              whileHover={{ scale: 1.1, rotate: 0, y: -20 }}
+              className="bg-white p-4 pb-16 shadow-2xl rotate-[-8deg] w-56 border border-gray-200 cursor-pointer transition-all duration-300"
             >
-              <span>{projects.length} shipped projects</span>
-              <span className="w-1 h-1 rounded-full bg-[var(--ink-faint)]" />
-              <span>{internshipCount} internships</span>
+              <div className="aspect-[4/5] bg-gray-200 overflow-hidden relative">
+                <Image src="/profile.jpg" alt={siteConfig.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+              </div>
+              <p className="font-handwriting text-xl text-black absolute bottom-4 left-6">
+                Behind the scenes...
+              </p>
+              {/* Tooltip that appears on hover */}
+              <div className="absolute -top-32 left-0 bg-[var(--ink)] text-white p-4 text-xs font-mono rounded opacity-0 group-hover:opacity-100 transition-opacity w-64 pointer-events-none shadow-xl">
+                Current Station: {siteConfig.currentRole}. Comfortable anywhere between a training loop and a production API[cite: 1].
+              </div>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-              className="flex items-center gap-4"
-            >
-              <MagneticButton
-                href="#work"
-                className="group px-6 py-3 rounded-full bg-[var(--ink)] text-[var(--paper)] text-sm font-medium hover:bg-[var(--teal)] transition-colors inline-flex items-center gap-2"
-              >
-                See the work
-                <ArrowDown size={14} className="group-hover:translate-y-0.5 transition-transform" />
-              </MagneticButton>
-              <MagneticButton
-                href={siteConfig.github}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub"
-                className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:text-[var(--ink)] hover:border-[var(--ink-faint)] transition-colors"
-              >
-                <Github size={17} />
-              </MagneticButton>
-              <MagneticButton
-                href={siteConfig.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="LinkedIn"
-                className="w-11 h-11 rounded-full border border-[var(--line)] flex items-center justify-center text-[var(--ink-soft)] hover:text-[var(--ink)] hover:border-[var(--ink-faint)] transition-colors"
-              >
-                <Linkedin size={17} />
-              </MagneticButton>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-            className="relative hidden md:block"
-          >
-            <SpotlightCard className="card-wash rounded-[28px] rotate-[2deg] shadow-[var(--shadow-lg)]">
-              <div className="p-8 relative z-20">
-                <p className="text-[12px] uppercase tracking-wide text-[var(--ink-faint)] mb-4">Currently</p>
-                <p className="font-display italic text-xl text-[var(--ink)] leading-snug mb-6">
-                  Building an NL2SQL pipeline with GIS routing for a conversational AI platform.
-                </p>
-                <div className="h-px bg-[var(--line)] mb-6" />
-                <p className="text-[13px] text-[var(--ink-soft)]">{siteConfig.education}</p>
-              </div>
-            </SpotlightCard>
-          </motion.div>
-        </section>
-
-        {/* ============ ABOUT ============ */}
-        <motion.section
-          id="about"
-          {...sectionReveal}
-          className="relative py-20 scroll-mt-24 grid grid-cols-1 md:grid-cols-[0.8fr_1.2fr] gap-12 items-center"
-        >
-          <div className="relative">
-            <div className="grade-wash w-[320px] h-[320px] -top-10 -left-16 opacity-35" />
-            <div className="relative rotate-[-2deg] rounded-[28px] overflow-hidden shadow-[var(--shadow-lg)] max-w-sm mx-auto md:mx-0">
-              <Image
-                src="/profile.jpg"
-                alt={siteConfig.name}
-                width={800}
-                height={1000}
-                className="w-full h-auto object-cover"
-                priority
-              />
-            </div>
           </div>
+        </motion.div>
 
-          <div>
-            <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-4 uppercase">About</p>
-            <h2 className="font-display text-3xl md:text-[2.2rem] leading-[1.18] text-[var(--ink)] mb-6 text-balance">
-              I like building things that <span className="italic text-[var(--teal)]">work in production</span>,
-              not just in a notebook.
-            </h2>
-            <p className="text-[16px] text-[var(--ink-soft)] leading-relaxed max-w-lg mb-6">
-              My path started with computer vision — teaching models to see — and
-              grew into shipping full systems: APIs, RAG pipelines, and the
-              unglamorous plumbing that makes AI features actually reliable for
-              real users.
-            </p>
+        {/* Layer 4: Dappled Sunlight Mask */}
+        <div className="dappled-sunlight" />
 
-            <dl className="grid grid-cols-2 gap-x-8 gap-y-4 max-w-lg pt-2 border-t border-[var(--line)]">
-              <div>
-                <dt className="text-[12px] uppercase tracking-wide text-[var(--ink-faint)] mb-1">Based in</dt>
-                <dd className="text-[14px] text-[var(--ink)]">{siteConfig.location}</dd>
-              </div>
-              <div>
-                <dt className="text-[12px] uppercase tracking-wide text-[var(--ink-faint)] mb-1">Currently</dt>
-                <dd className="text-[14px] text-[var(--ink)]">{siteConfig.currentRole}</dd>
-              </div>
-              <div className="col-span-2">
-                <dt className="text-[12px] uppercase tracking-wide text-[var(--ink-faint)] mb-1">Education</dt>
-                <dd className="text-[14px] text-[var(--ink)]">{siteConfig.education}</dd>
-              </div>
-            </dl>
-          </div>
-        </motion.section>
+        {/* ================= THE BOOK ================= */}
+        <div className="relative w-full max-w-[1100px] aspect-[16/10] preserve-3d shadow-2xl z-10 rotate-x-[15deg]">
 
-        {/* ============ FOCUS ============ */}
-        <motion.section {...sectionReveal} className="py-20">
-          <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-4 uppercase">What I focus on</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--line)] rounded-2xl overflow-hidden border border-[var(--line)]">
-            {focusAreas.map((f, i) => (
-              <div key={i} className="bg-[var(--card)] p-7">
-                <span className="font-display italic text-sm text-[var(--amber)] block mb-3">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <h3 className="text-[15px] font-medium text-[var(--ink)] mb-2">{f.label}</h3>
-                <p className="text-[13.5px] text-[var(--ink-soft)] leading-relaxed">{f.copy}</p>
-              </div>
-            ))}
-          </div>
-        </motion.section>
+          {/* Static Book Backing & Spine */}
+          <div className="absolute top-0 left-0 w-1/2 h-full bg-[var(--paper-back)] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-l-md" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[var(--paper-back)] shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-r-md" />
+          <div className="absolute left-1/2 top-0 bottom-0 w-8 -translate-x-1/2 bg-[var(--paper-spine)] shadow-inner z-0" />
 
-        {/* ============ SKILLS ============ */}
-        <motion.section {...sectionReveal} className="py-16">
-          <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-10 uppercase">Stack</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-            {skills.map((group, gi) => {
-              const accent = categoryAccent[group.category] ?? categoryAccent['Engineering & Deployment'];
-              return (
-                <div key={gi}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
-                    <h3 className={`text-[13.5px] font-medium ${accent.text}`}>{group.category}</h3>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {group.items.map((item, ii) => (
-                      <span key={ii} className="chip">{item}</span>
+          {/* PAGE 1: Cover */}
+          <Page index={0} total={4} progress={scrollYProgress} zIndex={40} playThwip={playThwip}
+            front={
+              <div className="h-full flex flex-col items-center justify-center p-12 text-center bg-[var(--ink)] text-white">
+                <h1 className="text-6xl tracking-tight uppercase font-bold mb-4">
+                  {siteConfig.name.split(" ")[0]} <span className="text-[var(--neon-cyan)]">{siteConfig.name.split(" ")[1]}</span>
+                </h1>
+                <p className="font-mono text-sm tracking-widest text-[var(--neon-pink)]">RESEARCH & ARCHITECTURE</p>
+              </div>
+            }
+            back={
+              <div className="h-full p-12 flex items-center justify-center">
+                <p className="font-handwriting text-3xl text-gray-400 rotate-[-2deg]">"Data is messy. Systems shouldn't be."</p>
+              </div>
+            }
+          />
+
+          {/* PAGE 2: Tech Index & Accents */}
+          <Page index={1} total={4} progress={scrollYProgress} zIndex={30} playThwip={playThwip}
+            front={
+              <div className="h-full p-12 relative">
+                <p className="font-mono text-xs text-gray-400 mb-8 border-b pb-2 uppercase">01 / Methodology</p>
+                <h2 className="text-4xl font-bold mb-8">Technical Apparatus</h2>
+                <div className="grid grid-cols-2 gap-8">
+                  {skills.slice(0, 4).map((skill, i) => (
+                    <div key={i} className="relative z-10">
+                      {/* Neon Highlight Accent */}
+                      <div className="absolute -inset-2 bg-[var(--highlight)] -z-10 skew-x-[-10deg]" />
+                      <h3 className="font-mono text-sm font-bold text-[var(--neon-pink)] mb-2">{skill.category}</h3>
+                      <ul className="text-sm font-mono leading-relaxed">
+                        {skill.items.slice(0, 4).map(item => <li key={item}>› {item}</li>)}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            }
+            back={
+              <div className="h-full p-12 bg-gray-900 text-white">
+                <p className="font-mono text-xs text-gray-500 mb-8 border-b border-gray-700 pb-2 uppercase">02 / Case Study</p>
+                <h2 className="text-4xl font-bold text-[var(--neon-cyan)] mb-4">{projects[1].title}</h2>
+                <p className="text-sm text-gray-300 leading-relaxed max-w-md">{projects[1].description}[cite: 1]</p>
+
+                {/* Tech Diagram drawn on the page */}
+                <div className="mt-8 border border-[var(--neon-pink)] p-4 font-mono text-xs text-center text-[var(--neon-pink)]">
+                   [ RETRIEVAL PIPELINE ] <br/><br/>
+                   Query → Vector Embeddings → Context Chunk → LLM Synthesis
+                </div>
+              </div>
+            }
+          />
+
+          {/* PAGE 3: Experience */}
+          <Page index={2} total={4} progress={scrollYProgress} zIndex={20} playThwip={playThwip}
+            front={
+              <div className="h-full p-12">
+                 <p className="font-mono text-xs text-gray-400 mb-8 border-b pb-2 uppercase">03 / Experience</p>
+                 <h2 className="text-3xl font-bold mb-6">Appointments</h2>
+                 <div className="space-y-6 border-l-2 border-[var(--neon-cyan)] pl-6">
+                    {experience.slice(0,3).map((exp, i) => (
+                      <div key={i}>
+                        <p className="font-mono text-xs text-[var(--neon-cyan)] font-bold">{exp.dates}</p>
+                        <h4 className="font-bold">{exp.role}</h4>
+                        <p className="text-sm text-gray-600">{exp.company}</p>
+                      </div>
                     ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        {/* ============ WORK ============ */}
-        <motion.section id="work" {...sectionReveal} className="py-16 scroll-mt-24">
-          <div className="flex items-end justify-between mb-12">
-            <h2 className="font-display italic text-4xl text-[var(--ink)]">Selected work</h2>
-            <span className="text-[13px] text-[var(--ink-faint)] hidden md:block">{projects.length} projects</span>
-          </div>
-
-          <a href={featured.repoUrl} target="_blank" rel="noreferrer" className="block mb-6 group">
-            <SpotlightCard className="card-wash rounded-[28px] shadow-[var(--shadow-md)] transition-shadow group-hover:shadow-[var(--shadow-lg)]">
-              <div className="p-8 md:p-10 relative z-20">
-                <div className="flex items-center gap-2 mb-5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--amber)]" />
-                  <span className="text-[12px] uppercase tracking-wide text-[var(--ink-faint)]">Featured</span>
-                </div>
-                <h3 className="font-display text-2xl md:text-3xl text-[var(--ink)] mb-4 group-hover:text-[var(--teal)] transition-colors">
-                  {featured.title}
-                </h3>
-                <p className="text-[15.5px] text-[var(--ink-soft)] leading-relaxed max-w-2xl mb-6">
-                  {featured.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    {featured.chips.map((chip, j) => (
-                      <span key={j} className="chip">{chip}</span>
-                    ))}
-                  </div>
-                  <ArrowUpRight
-                    size={22}
-                    className="text-[var(--ink-faint)] group-hover:text-[var(--ink)] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all shrink-0 ml-4"
-                  />
-                </div>
+                 </div>
               </div>
-            </SpotlightCard>
-          </a>
-
-          <div className="divide-y divide-[var(--line)]">
-            {restProjects.map((project, i) => (
-              <a
-                key={i}
-                href={project.repoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="group grid grid-cols-1 md:grid-cols-[64px_1fr_auto] gap-4 md:gap-8 items-center py-8 hover:bg-[var(--card)] rounded-2xl px-4 -mx-4 transition-colors"
-              >
-                <span className="font-display italic text-2xl text-[var(--ink-faint)] group-hover:text-[var(--amber)] transition-colors">
-                  {String(i + 2).padStart(2, '0')}
-                </span>
-
-                <div>
-                  <h3 className="font-display text-lg md:text-xl text-[var(--ink)] mb-2 group-hover:text-[var(--teal)] transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-[14.5px] text-[var(--ink-soft)] leading-relaxed max-w-xl mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.chips.map((chip, j) => (
-                      <span key={j} className="text-[12px] text-[var(--ink-faint)]">
-                        {chip}{j < project.chips.length - 1 ? ' ·' : ''}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <ArrowUpRight
-                  size={20}
-                  className="text-[var(--ink-faint)] group-hover:text-[var(--ink)] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all justify-self-end"
-                />
-              </a>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* ============ ARCHIVE ============ */}
-        <motion.section {...sectionReveal} className="py-16">
-          <h2 className="font-display italic text-2xl text-[var(--ink)] mb-8">A few smaller experiments</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {moreExperiments.map((e, i) => (
-              <a
-                key={i}
-                href={e.url}
-                target="_blank"
-                rel="noreferrer"
-                className="card-wash rounded-2xl p-6 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow"
-              >
-                <h4 className="text-[15px] font-medium text-[var(--ink)] mb-2">{e.title}</h4>
-                <p className="text-[13px] text-[var(--ink-soft)] leading-relaxed">{e.description}</p>
-              </a>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* ============ EXPERIENCE ============ */}
-        <motion.section id="experience" {...sectionReveal} className="py-16 scroll-mt-24">
-          <h2 className="font-display italic text-4xl text-[var(--ink)] mb-14">Experience</h2>
-          <div className="relative pl-8 md:pl-10">
-            <div className="absolute left-[3px] top-2 bottom-2 w-px bg-[var(--line)]" />
-            <div className="space-y-12">
-              {experience.map((exp, i) => (
-                <div key={i} className="relative">
-                  <span className="absolute -left-8 md:-left-10 top-1.5 w-[7px] h-[7px] rounded-full bg-[var(--amber)]" />
-                  <p className="text-[13px] text-[var(--ink-faint)] mb-1">{exp.dates}</p>
-                  <h3 className="font-display text-xl text-[var(--ink)] mb-1">{exp.role}</h3>
-                  <p className="text-[14px] text-[var(--teal)] mb-3">{exp.company}</p>
-                  <p className="text-[15px] text-[var(--ink-soft)] leading-relaxed max-w-2xl">{exp.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.section>
-
-        {/* ============ CLOSING CTA ============ */}
-        <motion.section {...sectionReveal} className="py-24 text-center relative">
-          <div className="grade-wash w-[500px] h-[300px] top-0 left-1/2 -translate-x-1/2 opacity-30" />
-          <div className="relative">
-            <p className="text-[13px] tracking-wide text-[var(--ink-faint)] mb-4 uppercase">Get in touch</p>
-            <h2 className="font-display text-3xl md:text-[2.6rem] leading-[1.15] text-[var(--ink)] mb-8 max-w-2xl mx-auto text-balance">
-              Have something worth <span className="italic text-[var(--teal)]">building</span>? I&apos;d like to hear about it.
-            </h2>
-            <MagneticButton
-              href={`mailto:${siteConfig.email}`}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[var(--ink)] text-[var(--paper)] text-sm font-medium hover:bg-[var(--teal)] transition-colors"
-            >
-              <Mail size={16} />
-              {siteConfig.email}
-            </MagneticButton>
-          </div>
-        </motion.section>
-
-      </main>
-
-      {/* ============ FOOTER ============ */}
-      <footer className="border-t border-[var(--line)]">
-        <div className="max-w-5xl mx-auto px-6 md:px-8 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <p className="text-[13px] text-[var(--ink-faint)]">
-            © {new Date().getFullYear()} {siteConfig.name} — made with care in {siteConfig.location}
-          </p>
-          <div className="flex items-center gap-5">
-            <MagneticButton href={siteConfig.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
-              <Github size={17} />
-            </MagneticButton>
-            <MagneticButton href={siteConfig.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
-              <Linkedin size={17} />
-            </MagneticButton>
-            <MagneticButton href={`mailto:${siteConfig.email}`} aria-label="Email" className="text-[var(--ink-soft)] hover:text-[var(--ink)] transition-colors">
-              <Mail size={17} />
-            </MagneticButton>
-          </div>
+            }
+            back={
+              <div className="h-full flex flex-col items-center justify-center text-center p-12">
+                <h2 className="text-4xl font-bold mb-6">End of Record.</h2>
+                <a href={`mailto:${siteConfig.email}`} className="px-6 py-3 bg-[var(--ink)] text-[var(--neon-cyan)] font-mono text-sm hover:bg-[var(--neon-pink)] hover:text-white transition-colors">
+                   Dispatch Inquiry
+                </a>
+              </div>
+            }
+          />
         </div>
-      </footer>
+      </div>
     </div>
-  )
+  );
 }

@@ -2,136 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================================
-   TOKENS — "Warm Grade" system.
-   Film-inspired grade: warm highlights (amber), cool shadows
-   (deep teal), on a soft linen paper ground. No pure black,
-   no pure white, nothing fully saturated.
-   ============================================================ */
 :root {
-  --paper: #faf6ef;
-  --paper-deep: #f1e9db;
-  --card: #fffdf9;
-  --ink: #2b2620;
-  --ink-soft: #6e6459;
-  --ink-faint: #a89e8f;
-  --line: rgba(43, 38, 32, 0.09);
-  --line-strong: rgba(43, 38, 32, 0.16);
+  /* Crisper, high-quality paper */
+  --paper-front: #FCFDFB;
+  --paper-back: #F2F3F0;
+  --paper-spine: #E5E6E3;
 
-  --teal: #3e5c58;
-  --teal-soft: #6c8985;
-  --amber: #d99a51;
-  --amber-soft: #eec48a;
-  --rose: #c97b6b;
-
-  --shadow-sm: 0 8px 20px -14px rgba(43, 38, 32, 0.35);
-  --shadow-md: 0 24px 48px -24px rgba(43, 38, 32, 0.28);
-  --shadow-lg: 0 40px 80px -32px rgba(43, 38, 32, 0.32);
-}
-
-html {
-  scroll-behavior: smooth;
-  background-color: var(--paper);
-  color: var(--ink);
+  /* High contrast ink with neon tech accents */
+  --ink: #111827;
+  --ink-soft: #4B5563;
+  --neon-cyan: #00F0FF;
+  --neon-pink: #FF0055;
+  --highlight: rgba(0, 240, 255, 0.15);
 }
 
 body {
-  font-family: var(--font-inter), 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--paper);
-  position: relative;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: #000; /* Fallback for the background image */
 }
 
-.font-display {
-  font-family: var(--font-fraunces), 'Fraunces', serif;
+/* 3D Book Utilities */
+.perspective-container {
+  perspective: 2500px;
+  transform-style: preserve-3d;
 }
 
-::selection {
-  background: var(--amber-soft);
-  color: var(--ink);
+.preserve-3d {
+  transform-style: preserve-3d;
 }
 
-/* Visible, deliberate focus states — a small but real accessibility
-   and craft signal that generic templates usually skip. */
-a:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 3px;
-  border-radius: 4px;
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--paper);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--ink-faint);
-  border-radius: 6px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ink-soft);
+/* The Dappled Sunlight Animation */
+@keyframes sway {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(2%, 1%) rotate(1deg); }
+  50% { transform: translate(-1%, 2%) rotate(-0.5deg); }
+  75% { transform: translate(-2%, -1%) rotate(0.5deg); }
 }
 
-/* ============================================================
-   FILM GRAIN — a fixed, near-invisible noise layer so large
-   flat color areas feel like graded film stock, not a UI fill.
-   ============================================================ */
-.grain {
+.dappled-sunlight {
   position: fixed;
-  inset: 0;
+  inset: -10%; /* Oversized to allow for swaying without cutting off */
+  width: 120%;
+  height: 120%;
   pointer-events: none;
-  z-index: 60;
-  opacity: 0.045;
+  z-index: 50;
+  background-image: radial-gradient(circle, transparent 20%, #000 150%), url('https://www.transparenttextures.com/patterns/leaves-pattern.png');
+  background-size: 800px;
+  opacity: 0.15;
   mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: sway 15s ease-in-out infinite;
 }
 
-/* ============================================================
-   SIGNATURE — soft duotone "grade wash": a large, gently
-   blurred gradient blending teal shadow into amber highlight,
-   the way a colorist would paint a gradient map onto a shot.
-   ============================================================ */
-.grade-wash {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(90px);
-  opacity: 0.5;
-  background: radial-gradient(circle at 30% 30%, var(--amber-soft), transparent 60%),
-              radial-gradient(circle at 70% 70%, var(--teal-soft), transparent 60%);
-  pointer-events: none;
-}
-
-.card-wash {
-  background: linear-gradient(155deg, var(--card) 0%, var(--card) 55%, var(--paper-deep) 100%);
-}
-
-/* Reusable chip component — consistent everywhere a tag/pill appears */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.85rem;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  border: 1px solid var(--line);
-  color: var(--ink-soft);
-  background: var(--card);
-}
-
-/* Gentle entrance — a soft rise, no snap */
-@keyframes soft-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.soft-rise {
-  animation: soft-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .soft-rise { animation: none; }
-  html { scroll-behavior: auto; }
+/* Realistic Page Shadow Casting */
+.page-shadow {
+  box-shadow: inset 10px 0 20px rgba(0,0,0,0.05), -15px 10px 30px rgba(0,0,0,0.15);
 }
